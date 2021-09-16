@@ -24,7 +24,8 @@ class TwitterSentiment:
     negative_tokenized = twitter_samples.tokenized('negative_tweets.json')
     neutral_tokenized = twitter_samples.tokenized(
         'tweets.20150430-223406.json')
-    PKL_FILENAME = 'pkl_classifier.pkl'
+
+    PKL_MODEL_FILENAME = 'pkl_classifier.pkl'
 
     def clean(self, tokens, stop_words=stopwords.words('english')):
         """Method to remove nosie and lemmetize tokens"""
@@ -75,8 +76,10 @@ class TwitterSentiment:
 
     def get_dataset(self):
         positive_cleaned, negative_cleaned = self.get_cleaned_list()
-        positive_model = self.get_tweets_for_model(positive_cleaned)
-        negative_model = self.get_tweets_for_model(negative_cleaned)
+        positive_model = self.get_tweets_for_model(
+            positive_cleaned)
+        negative_model = self.get_tweets_for_model(
+            negative_cleaned)
         pd = [(tweet_dict, 'Positive') for tweet_dict in positive_model]
         nd = [(tweet_dict, 'Negative') for tweet_dict in negative_model]
         dataset = pd+nd
@@ -85,10 +88,14 @@ class TwitterSentiment:
         test_data = dataset[:7000]
         return (train_data, test_data)
 
-    def save_model(self):
-        train_data, test_data = self.get_dataset()
+    def get_model(self):
+        train_data, _ = self.get_dataset()
         classifier = NaiveBayesClassifier.train(train_data)
-        with open(self.PKL_FILENAME, 'wb') as f:
+        return classifier
+
+    def save_model(self):
+        classifier = self.get_model()
+        with open(self.PKL_MODEL_FILENAME, 'wb') as f:
             pickle.dump(classifier, f)
 
     def get_tokens(self, sentence):
@@ -96,13 +103,15 @@ class TwitterSentiment:
 
     def analyze(self, sentence):
         tokens = self.get_tokens(sentence)
-        with open(self.PKL_FILENAME, 'rb') as f:
+        with open(self.PKL_MODEL_FILENAME, 'rb') as f:
             classifier = pickle.load(f)
         return classifier.classify(dict([token, True] for token in tokens))
 
 
 if __name__ == '__main__':
+    start = time()
     s = input('Enter the sentence you want to analyze: ')
     sentiment = TwitterSentiment()
     analysis = sentiment.analyze(s)
     print(analysis)
+    print(time()-start)
