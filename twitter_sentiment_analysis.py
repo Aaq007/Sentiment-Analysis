@@ -9,7 +9,7 @@ from nltk import NaiveBayesClassifier, classify
 from nltk.corpus import stopwords, twitter_samples
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.tag import pos_tag
-from nltk.tokenize import regexp_tokenize, word_tokenize, wordpunct_tokenize
+from nltk.tokenize import word_tokenize
 
 # # nltk.download('twitter_samples')
 # # nltk.download('wordnet')
