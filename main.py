@@ -1,4 +1,4 @@
-from language_processing import TwitterSentiment
+from twitter_sentiment_analysis import TwitterSentiment
 
 if __name__ == '__main__':
     sentiment_analyzer = TwitterSentiment()
